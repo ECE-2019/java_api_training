@@ -20,7 +20,7 @@ public class API extends Server {
     private final BaseEntity<MapEntity> serverMap = new BaseEntity<>();
     private final BaseEntity<MapEntity> clientMap = new BaseEntity<>();
 
-    public void start(int port, String url) throws IOException {
+    public void create(int port, String url) throws IOException {
         api.set(new ApiEntity(
             UUID.randomUUID().toString(),
             "http://localhost:" + port,
@@ -29,11 +29,12 @@ public class API extends Server {
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.setExecutor(Executors.newSingleThreadExecutor());
         server.createContext("/ping", this::ping);
-        server.createContext("/api/game/start", s -> gameStart(new RequestHandler(s)));
-        server.createContext("/api/game/fire", s -> gameStart(new RequestHandler(s)));
+        server.createContext("/api/game/start", s -> start(new RequestHandler(s)));
+        server.createContext("/api/game/fire", s -> start(new RequestHandler(s)));
         server.start();
+        if (url != null)
+            this.clientStart(url);
     }
-
     private void ping(HttpExchange exchange) throws IOException {
         String body = "OK";
         exchange.sendResponseHeaders(200, body.length());
@@ -42,7 +43,20 @@ public class API extends Server {
         }
     }
 
-    public void gameStart(RequestHandler handler) throws IOException {
+    public void clientStart(String url) {
+        try {
+            serverMap.set(new MapEntity(true));
+            System.out.println(this.api.get().toJSON().toString());
+            clientMap.set(new MapEntity(false));
+            var response = post(url + "/api/game/start", this.api.get().toJSON());
+            this.client.set(ApiEntity.fromJSON(response).withURL(url));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Failed to start the game");
+        }
+    }
+
+    public void start(RequestHandler handler) throws IOException {
         try {
             client.set(ApiEntity.fromJSON(handler.getJSONObject()));
             serverMap.set(new MapEntity(true));
@@ -59,7 +73,7 @@ public class API extends Server {
     public void fire() throws IOException, InterruptedException {
         CoordinatesEntity coordinates = clientMap.get().getNextPlaceToHit();
         var response =
-            sendGET(client.get().getUrl() + "/api/game/fire?cell=" + coordinates.toString());
+            get(client.get().getUrl() + "/api/game/fire?cell=" + coordinates.toString());
         if (!response.getBoolean("shipLeft")) {
             return;
         }
