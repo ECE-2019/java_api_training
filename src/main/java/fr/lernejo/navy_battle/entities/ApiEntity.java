@@ -4,18 +4,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ApiEntity {
-    private final String id;
     private final String url;
     private final String message;
 
-    public ApiEntity(String id, String url, String message) {
-        this.id = id;
+    public ApiEntity(String url, String message) {
         this.url = url;
         this.message = message;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getUrl() {
@@ -28,7 +22,6 @@ public class ApiEntity {
 
     public JSONObject toJSON() {
         JSONObject obj = new JSONObject();
-        obj.put("id", id);
         obj.put("url", url);
         obj.put("message", message);
         return obj;
@@ -36,7 +29,6 @@ public class ApiEntity {
 
     public static ApiEntity fromJSON(JSONObject object) throws JSONException {
         return new ApiEntity(
-            object.getString("id"),
             object.getString("url"),
             object.getString("message")
         );
@@ -44,7 +36,6 @@ public class ApiEntity {
 
     public ApiEntity withURL(String url) {
         return new ApiEntity(
-            this.id,
             url,
             this.message
         );

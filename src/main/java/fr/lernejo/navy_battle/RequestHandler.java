@@ -18,18 +18,15 @@ public class RequestHandler {
         return new String(this.exchange.getRequestBody().readAllBytes());
     }
 
-    public JSONObject getJSONObject() throws IOException {
+    public JSONObject getJSON() throws IOException {
         try {
             return new JSONObject(readToString());
         } catch (JSONException e) {
-            sendString(400, e.toString());
+            responseString(400, e.toString());
             throw new JSONException(e);
         }
     }
 
-    /**
-     * Get a query parameter included in the request
-     */
     public String getQueryParameter(String name) throws IOException {
         for (var key : exchange.getRequestURI().getQuery().split("&")) {
             var split = key.split("=");
@@ -41,7 +38,7 @@ public class RequestHandler {
         throw new IOException("Parameter " + name + " missing in the URL!");
     }
 
-    public void sendString(int status, String test) throws IOException {
+    public void responseString(int status, String test) throws IOException {
         byte[] bytes = test.getBytes();
         exchange.sendResponseHeaders(status, bytes.length);
 
@@ -53,6 +50,6 @@ public class RequestHandler {
 
     public void response(int status, JSONObject object) throws IOException {
         exchange.getResponseHeaders().set("Content-type", "application/json");
-        sendString(status, object.toString());
+        responseString(status, object.toString());
     }
 }

@@ -9,7 +9,6 @@ import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.UUID;
 import java.util.concurrent.Executors;
 
 import org.json.JSONObject;
@@ -22,7 +21,6 @@ public class Api extends Server {
 
     public void create(int port, String url) throws IOException {
         api.set(new ApiEntity(
-            UUID.randomUUID().toString(),
             "http://localhost:" + port,
             "OK"
         ));
@@ -58,7 +56,7 @@ public class Api extends Server {
 
     public void handleStart(RequestHandler handler) throws IOException {
         try {
-            client.set(ApiEntity.fromJSON(handler.getJSONObject()));
+            client.set(ApiEntity.fromJSON(handler.getJSON()));
             serverMap.set(new MapEntity(true));
             clientMap.set(new MapEntity(false));
             System.out.println("Server will fight against the following client: " + client.get().getUrl());
@@ -66,7 +64,7 @@ public class Api extends Server {
             fire();
         } catch (Exception e) {
             e.printStackTrace();
-            handler.sendString(400, e.getMessage());
+            handler.responseString(400, e.getMessage());
         }
     }
 
@@ -97,7 +95,7 @@ public class Api extends Server {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            handler.sendString(400, e.getMessage());
+            handler.responseString(400, e.getMessage());
         }
     }
 }

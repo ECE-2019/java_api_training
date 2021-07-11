@@ -8,6 +8,7 @@ class LauncherTest {
 
     @Test
     public void main() {
-        Launcher.main(new String[]{"3000", "http://localhost:3000"});
+        Launcher.main(new String[]{"3001"});
+        Launcher.main(new String[]{"3000", "http://localhost:3001"});
     }
 }
