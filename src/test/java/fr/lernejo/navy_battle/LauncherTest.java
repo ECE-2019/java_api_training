@@ -9,7 +9,6 @@ class LauncherTest {
 
     @Test
     public void main() {
-        server.main(null);
-        System.out.println(server.getClass());
+        Launcher.main(new String[]{"8765", "http://localhost:3000"});
     }
 }
