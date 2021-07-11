@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 
 import org.json.JSONObject;
 
-public class API extends Server {
+public class Api extends Server {
     private final BaseEntity<ApiEntity> api = new BaseEntity<>();
     private final BaseEntity<ApiEntity> client = new BaseEntity<>();
     private final BaseEntity<MapEntity> serverMap = new BaseEntity<>();
@@ -29,8 +29,8 @@ public class API extends Server {
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.setExecutor(Executors.newSingleThreadExecutor());
         server.createContext("/ping", this::ping);
-        server.createContext("/api/game/start", s -> start(new RequestHandler(s)));
-        server.createContext("/api/game/fire", s -> start(new RequestHandler(s)));
+        server.createContext("/api/game/start", s -> handleStart(new RequestHandler(s)));
+        server.createContext("/api/game/fire", s -> handleFire(new RequestHandler(s)));
         server.start();
         if (url != null)
             this.clientStart(url);
@@ -56,7 +56,7 @@ public class API extends Server {
         }
     }
 
-    public void start(RequestHandler handler) throws IOException {
+    public void handleStart(RequestHandler handler) throws IOException {
         try {
             client.set(ApiEntity.fromJSON(handler.getJSONObject()));
             serverMap.set(new MapEntity(true));

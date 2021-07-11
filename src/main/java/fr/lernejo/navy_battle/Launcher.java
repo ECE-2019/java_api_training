@@ -13,7 +13,7 @@ public class Launcher {
             int serverPort = Integer.parseInt(args[0]);
             System.out.println("Server listen on port " + serverPort);
 
-            new API().create(serverPort, args.length > 1 ? args[1] : null);
+            new Api().create(serverPort, args.length > 1 ? args[1] : null);
         } catch (IOException e) {
             e.printStackTrace();
         }
